@@ -2,17 +2,14 @@ import sys
 import os
 from argparse import ArgumentParser
 from itertools import izip
-import csv
 from itertools import tee, izip
 from os.path import join, basename
 
 import numpy as np
 from spacepy import pycdf
 from matplotlib import pyplot as plt
-from matplotlib.axes import Axes
-from lxml import etree
-
 from osgeo import gdal
+
 
 gdal.UseExceptions()
 gdal.AllRegister()
@@ -23,7 +20,7 @@ report_template = """\
 <rep:browseReport xmlns:rep="http://ngeo.eo.esa.int/schema/browseReport" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ngeo.eo.esa.int/schema/browseReport http://ngeo.eo.esa.int/schema/browseReport/browseReport.xsd" version="2.0">
   <rep:responsibleOrgName>EOX</rep:responsibleOrgName>
   <rep:dateTime>2014-01-24T14:53:33Z</rep:dateTime>
-  <rep:browseType>SWARM-L1b</rep:browseType>
+  <rep:browseType>%(browse_type)s</rep:browseType>
   <rep:browse>
     <rep:browseIdentifier/>
     <rep:fileName>%(browse_filename)s</rep:fileName>
@@ -68,6 +65,8 @@ def generate(input_filename, output_template,
              start=0, stop=None, step=1000, x_size=1000, y_size=104):
     cdf = pycdf.CDF(input_filename)
     stop = stop or len(cdf["Timestamp"])
+
+    browse_type = "_".join(basename(input_filename).split("_")[:5])
 
     r = range(start, stop, step)
     for i, (chunk_start, chunk_end) in enumerate(pairwise(r)):
@@ -128,6 +127,7 @@ def generate(input_filename, output_template,
 
 
         report = report_template % {
+            "browse_type": browse_type,
             "node_number": node_number,
             "browse_filename": browse_filename,
             "col_row_list": col_row_list,
