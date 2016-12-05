@@ -115,20 +115,22 @@ def main(args):
             latitude = feature["properties"]["dd"]
             lat_int = int(round(latitude))
             direction = "N" if lat_int > 0 else "S"
-            display = "%s %s" % (lat_int, direction)
+            display_lat = lat_int if lat_int > 0 else -lat_int
+            display = "%s %s" % (display_lat, direction)
             if lat_int == 0:
                 direction = None
                 display = "0"
             feature["properties"].update(
                 degrees=lat_int, direction=direction, display=display,
-                scalerank=None )
+                scalerank=None)
             dst.write(feature)
         for feature in _extract_longitudes(lon_lines, lon, affine):
             dst.write(feature)
             longitude = feature["properties"]["dd"]
             lon_int = int(round(longitude))
             direction = "W" if lon_int > 0 else "E"
-            display = "%s %s" % (lon_int, direction)
+            display_lon = lon_int if lon_int > 0 else -lon_int
+            display = "%s %s" % (display_lon, direction)
             if lon_int == 0:
                 direction = None
                 display = "0"
@@ -176,7 +178,8 @@ def _extract_longitudes(lon_lines, lon_array, affine):
                     # longitude = -longitude
                     lon_int = int(round(-longitude))
                     direction = "W" if lon_int > 0 else "E"
-                    display = "%s %s" % (lon_int, direction)
+                    display_lon = lon_int if lon_int > 0 else -lon_int
+                    display = "%s %s" % (display_lon, direction)
                     if lon_int == 0:
                         direction = None
                         display = "0"
@@ -193,7 +196,8 @@ def _extract_longitudes(lon_lines, lon_array, affine):
                         geometry=mapping(LineString(out_line_coords)))
                     lon_int = int(round(longitude))
                     direction = "W" if lon_int > 0 else "E"
-                    display = "%s %s" % (lon_int, direction)
+                    display_lon = lon_int if lon_int > 0 else -lon_int
+                    display = "%s %s" % (display_lon, direction)
                     if lon_int == 0:
                         direction = None
                         display = "0"
@@ -213,7 +217,8 @@ def _extract_longitudes(lon_lines, lon_array, affine):
                 geometry=mapping(LineString(out_line_coords)))
             lon_int = int(round(longitude))
             direction = "W" if lon_int > 0 else "E"
-            display = "%s %s" % (lon_int, direction)
+            display_lon = lon_int if lon_int > 0 else -lon_int
+            display = "%s %s" % (display_lon, direction)
             if lon_int == 0:
                 direction = None
                 display = "0"
